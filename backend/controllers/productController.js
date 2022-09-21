@@ -1,5 +1,5 @@
 // here we define the functions of API
 
-exports.getAllProduct = (res, send) => {
+exports.getAllProduct = (req, res) => {
     res.status(200).json({ message: "Route is working fine" })
 }
