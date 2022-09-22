@@ -2,6 +2,8 @@
 
 const Product = require("../models/productSchema")
 
+
+// ------------- GET method controllers --------------
 // Get all products
 exports.getAllProduct = async (req, res) => {
     const products = await Product.find()
@@ -11,6 +13,25 @@ exports.getAllProduct = async (req, res) => {
     })
 }
 
+// Get single product
+exports.getProductDetails = async (req, res, next) => {
+    const product = await Product.findById(req.params.id)
+
+    if (!product) {
+        return req.status(500).json({
+            success: false,
+            message: "Product not found"
+        })
+    }
+
+    res.status(200).json({
+        success: true,
+        product
+    })
+}
+
+
+// ------------- POST method controllers --------------
 // Create product -- ADMIN
 exports.createProduct = async (req, res, next) => {
     const product = await Product.create(req.body)
@@ -21,6 +42,7 @@ exports.createProduct = async (req, res, next) => {
     })
 }
 
+// ------------- PUT method controllers --------------
 // Update product - ADMIN
 exports.updateProduct = async (req, res, next) => {
     let product = await Product.findById(req.params.id)
@@ -44,6 +66,7 @@ exports.updateProduct = async (req, res, next) => {
     })
 }
 
+// ------------- DELETE method controllers --------------
 // Delete Product -- ADMIN
 exports.deleteProduct = async (req, res, next) => {
     const product = await Product.findById(req.params.id)
