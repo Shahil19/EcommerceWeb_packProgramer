@@ -1,6 +1,7 @@
 // here we define the functions of API
 
 const Product = require("../models/productSchema")
+const ErrorHandler = require("../utils/errorHandler")
 
 
 // ------------- GET method controllers --------------
@@ -18,10 +19,13 @@ exports.getProductDetails = async (req, res, next) => {
     const product = await Product.findById(req.params.id)
 
     if (!product) {
-        return req.status(500).json({
-            success: false,
-            message: "Product not found"
-        })
+        // res.status(500).json({
+        //     success: false,
+        //     message: "Product not found"
+        // })
+        // next({ massage: "Product not found", success: false })
+        next(new ErrorHandler("Product not found", 404))
+        return
     }
 
     res.status(200).json({
