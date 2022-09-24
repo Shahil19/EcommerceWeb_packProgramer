@@ -1,6 +1,7 @@
 // here we define the functions of API
 
 const Product = require("../models/productSchema")
+const ApiFeatures = require("../utils/apiFeatures")
 const ErrorHandler = require("../utils/errorHandler")
 
 // RED: CatchAsyncError handler
@@ -10,7 +11,11 @@ const ErrorHandler = require("../utils/errorHandler")
 // ------------- GET method controllers --------------
 // Get all products
 exports.getAllProduct = async (req, res) => {
-    const products = await Product.find()
+    // search filters
+    const apiFeature = new ApiFeatures(Product.find(), req.query).search()
+
+
+    const products = await apiFeature.query
     try {
         res.status(200).json({
             success: true,
