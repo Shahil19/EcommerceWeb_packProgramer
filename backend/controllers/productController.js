@@ -12,7 +12,7 @@ const ErrorHandler = require("../utils/errorHandler")
 // Get all products
 exports.getAllProduct = async (req, res) => {
     // search filters
-    const apiFeature = new ApiFeatures(Product.find(), req.query).search()
+    const apiFeature = new ApiFeatures(Product.find(), req.query).search().filter()
 
 
     const products = await apiFeature.query

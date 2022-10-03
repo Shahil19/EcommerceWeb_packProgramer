@@ -65,6 +65,7 @@ const productSchema = mongoose.Schema({
         default: Date.now
     }
 },
-    { collection: "products" })
+    { collection: "products" }
+)
 
 module.exports = mongoose.model("Product", productSchema)
