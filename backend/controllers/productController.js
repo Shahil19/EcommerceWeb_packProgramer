@@ -1,5 +1,4 @@
 // here we define the functions of API
-
 const Product = require("../models/productSchema")
 const ApiFeatures = require("../utils/apiFeatures")
 const ErrorHandler = require("../utils/errorHandler")
