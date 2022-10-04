@@ -12,13 +12,16 @@ const ErrorHandler = require("../utils/errorHandler")
 // Get all products
 exports.getAllProduct = async (req, res) => {
     // search filters
-    const apiFeature = new ApiFeatures(Product.find(), req.query).search().filter()
+    const resultPerPage = 5
+    const apiFeature = new ApiFeatures(Product.find(), req.query).search().filter().pagination(resultPerPage)
 
-
-    const products = await apiFeature.query
     try {
+        const products = await apiFeature.query
+        const productCount = await Product.countDocuments()
+
         res.status(200).json({
             success: true,
+            productCount,
             products
         })
     } catch (error) {
@@ -28,9 +31,9 @@ exports.getAllProduct = async (req, res) => {
 
 // Get single product
 exports.getProductDetails = async (req, res, next) => {
-    const product = await Product.findById(req.params.id)
 
     try {
+        const product = await Product.findById(req.params.id)
         if (!product) {
             next(new ErrorHandler("Product not found", 404))
             return
@@ -49,14 +52,17 @@ exports.getProductDetails = async (req, res, next) => {
 // ------------- POST method controllers --------------
 // Create product -- ADMIN
 exports.createProduct = async (req, res, next) => {
-    const product = await Product.create(req.body)
     try {
+        const product = await Product.create(req.body)
         res.status(201).json({
             success: true,
             product
         })
     } catch (error) {
-        return res.send(error.message)
+        return res.status(400).json({
+            message: "Can not post",
+            error
+        })
     }
 
 }
@@ -64,8 +70,8 @@ exports.createProduct = async (req, res, next) => {
 // ------------- PUT method controllers --------------
 // Update product - ADMIN
 exports.updateProduct = async (req, res, next) => {
-    let product = await Product.findById(req.params.id)
     try {
+        let product = await Product.findById(req.params.id)
         if (!product) {
             next(new ErrorHandler("Product not found", 404))
             return
@@ -90,9 +96,9 @@ exports.updateProduct = async (req, res, next) => {
 // ------------- DELETE method controllers --------------
 // Delete Product -- ADMIN
 exports.deleteProduct = async (req, res, next) => {
-    const product = await Product.findById(req.params.id)
 
     try {
+        const product = await Product.findById(req.params.id)
         if (!product) {
             next(new ErrorHandler("Product not found", 404))
             return
