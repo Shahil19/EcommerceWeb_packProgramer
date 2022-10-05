@@ -19,6 +19,23 @@ exports.getUsers = async (req, res, next) => {
     }
 }
 
+// get user details
+exports.getUserDetails = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id)
+
+        res.status(200).json({
+            success: true,
+            user
+        })
+    } catch (error) {
+        res.status(404).json({
+            success: false,
+            message: "Please enter e valid user ID"
+        })
+    }
+}
+
 // register a user
 exports.registerUser = async (req, res, next) => {
     const { name, email, password } = req.body
