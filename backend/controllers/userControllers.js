@@ -2,7 +2,7 @@ const ApiFeatures = require("../utils/apiFeatures")
 const ErrorHandler = require("../utils/errorHandler")
 const User = require("../models/userSchema")
 
-
+// ------------------ GET controllers ------------------------
 // Get all users
 exports.getUsers = async (req, res, next) => {
     try {
@@ -36,6 +36,7 @@ exports.getUserDetails = async (req, res, next) => {
     }
 }
 
+// ------------------ POST controllers ------------------------
 // register a user
 exports.registerUser = async (req, res, next) => {
     const { name, email, password } = req.body
@@ -59,3 +60,32 @@ exports.registerUser = async (req, res, next) => {
         })
     }
 }
+
+// ------------------ PUT controllers ------------------------
+
+// update user role -- ADMIN
+exports.updateUserRole = async (req, res, next) => {
+    try {
+        const updatedData = {
+            role: req.body.role
+        }
+
+        const user = await User.findByIdAndUpdate(req.params.id, updatedData, {
+            new: true,
+            runValidators: true,
+        })
+
+        res.status(200).json({
+            success: true,
+            user
+        })
+    } catch (error) {
+        res.status(404).json({
+            success: false,
+            message: "Please enter a valid User id",
+            error
+        })
+    }
+}
+
+
