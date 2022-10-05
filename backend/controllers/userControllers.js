@@ -2,6 +2,23 @@ const ApiFeatures = require("../utils/apiFeatures")
 const ErrorHandler = require("../utils/errorHandler")
 const User = require("../models/userSchema")
 
+
+// Get all users
+exports.getUsers = async (req, res, next) => {
+    try {
+        const users = await User.find(req.query)
+        res.status(200).json({
+            success: true,
+            users
+        })
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error
+        })
+    }
+}
+
 // register a user
 exports.registerUser = async (req, res, next) => {
     const { name, email, password } = req.body
