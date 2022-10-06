@@ -134,8 +134,6 @@ exports.login = async (req, res, next) => {
     }
 }
 
-
-
 // ------------------ PUT controllers ------------------------
 
 // update user role -- ADMIN
@@ -163,6 +161,41 @@ exports.updateUserRole = async (req, res, next) => {
     }
 }
 
+
+// update user password 
+exports.updatePassword = async (req, res, next) => {
+    const { email, newPassword } = req.body
+
+    try {
+        if (!email | !newPassword) {
+            return next(new ErrorHandler("Please enter a new password", 403))
+        }
+
+        const user = await User.findOne({ email }).select("+password")
+
+        if (newPassword === user.password) {
+            return next(new ErrorHandler("Your new password and last password is same", 403))
+        }
+
+        // updating password
+        await User.findOneAndUpdate({ email: email }, { password: newPassword }, {
+            new: true,
+            runValidators: true,
+            useFindAndModify: false
+        })
+
+        res.status(200).json({
+            success: true,
+            message: "Password updated successfully"
+        })
+
+    } catch (error) {
+        res.status(404).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
 
 // ------------------ DELETE controllers ------------------------
 // delete user -- ADMIN
