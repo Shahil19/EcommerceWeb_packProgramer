@@ -1,13 +1,14 @@
 const express = require("express")
-const { registerUser, getUsers, getUserDetails, updateUserRole, deleteUser, logout, login, updatePassword } = require("../controllers/userControllers")
-const isAuthorizedUser = require("../middleware/isAuthorizedUser")
+const { registerUser, getUsers, getUserDetails, updateUserRole, deleteUser, logout, login, updatePassword, getOwnData } = require("../controllers/userControllers")
+const { authorizeRole, isAuthorizedUser } = require("../middleware/isAuthorized")
+
 const router = express.Router()
 
 // Get all users Route -- ADMIN
-router.route("/admin/users").get(getUsers)
+router.route("/admin/users").get(authorizeRole("admin"), getUsers)
 
-// get owe / user details
-router.route("/me/:id").get(getUserDetails)
+// get own / user details
+router.route("/me").get(isAuthorizedUser, getOwnData)
 
 // register a user Route
 router.route("/user/register").post(registerUser)
@@ -19,10 +20,13 @@ router.route("/user/login").post(login)
 router.route("/user/logout/:id").get(logout)
 
 // update user password
-router.route("/user/updatePassword").put(updatePassword)
+router.route("/user/updatePassword").put(isAuthorizedUser, updatePassword)
+
+// get a user details -- ADMIN
+router.route("/admin/user/:id").get(authorizeRole("admin"), getUserDetails)
 
 // update user role and delete user Route -- ADMIN
-router.route("/admin/user/:id").put(updateUserRole).delete(deleteUser)
+router.route("/admin/user/:id").put(authorizeRole("admin"), updateUserRole).delete(authorizeRole("admin"), deleteUser)
 
 
 module.exports = router

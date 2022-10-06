@@ -24,7 +24,10 @@ exports.getAllProduct = async (req, res) => {
             products
         })
     } catch (error) {
-        return res.send(error.message)
+        return res.status(403).json({
+            success: false,
+            message: error.message
+        })
     }
 }
 
@@ -43,7 +46,10 @@ exports.getProductDetails = async (req, res, next) => {
             product
         })
     } catch (error) {
-        return res.send(error.message)
+        return res.status(403).json({
+            success: false,
+            message: error.message
+        })
     }
 }
 
@@ -51,6 +57,8 @@ exports.getProductDetails = async (req, res, next) => {
 // ------------- POST method controllers --------------
 // Create product -- ADMIN
 exports.createProduct = async (req, res, next) => {
+    // setting user id to the body before sending to the server
+    req.body.user = req.user.id
     try {
         const product = await Product.create(req.body)
         res.status(201).json({
@@ -58,9 +66,9 @@ exports.createProduct = async (req, res, next) => {
             product
         })
     } catch (error) {
-        return res.status(400).json({
-            message: "Can not post",
-            error
+        return res.status(403).json({
+            success: false,
+            message: error.message
         })
     }
 
@@ -87,7 +95,10 @@ exports.updateProduct = async (req, res, next) => {
             product
         })
     } catch (error) {
-        return res.send(error.message)
+        return res.status(403).json({
+            success: false,
+            message: error.message
+        })
     }
 
 }
@@ -112,6 +123,9 @@ exports.deleteProduct = async (req, res, next) => {
             result
         })
     } catch (error) {
-        return res.send(error.message)
+        return res.status(403).json({
+            success: false,
+            message: error.message
+        })
     }
 }

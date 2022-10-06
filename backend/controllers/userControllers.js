@@ -1,6 +1,7 @@
 const ErrorHandler = require("../utils/errorHandler")
 const User = require("../models/userSchema")
 const cookie = require("cookie-parser")
+const { sendJwtToken } = require("../utils/sendJwtToken")
 
 // ------------------ GET controllers ------------------------
 // Get all users
@@ -21,11 +22,12 @@ exports.getUsers = async (req, res, next) => {
     }
 }
 
-// get user details
+// get user details -- ADMIN
 exports.getUserDetails = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id)
 
+        if (!user) return next(new ErrorHandler("Not a user", 404))
         res.status(200).json({
             success: true,
             user
@@ -55,13 +57,30 @@ exports.logout = async (req, res, next) => {
                 message: "Logged out successfully"
             })
     } catch (error) {
-        res.status(404).json({
+        return res.status(404).json({
             success: false,
-            message: "user not found",
-            error
+            message: error.message
+
         })
     }
 
+}
+
+// ----- get Own(user) Data
+exports.getOwnData = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id)
+
+        res.status(200).json({
+            success: true,
+            user
+        })
+    } catch (error) {
+        return res.status(404).json({
+            success: false,
+            message: error.message
+        })
+    }
 }
 
 // ------------------ POST controllers ------------------------
@@ -84,17 +103,19 @@ exports.registerUser = async (req, res, next) => {
         // ------------- creating JWT token
         const token = user.getJwtToken()
 
-        res
+        /* res
             .status(201)
             .cookie("access_token", token, { httpOnly: true, }) // sending token to cookie through cookie-parser
             .json({
                 success: true,
                 user
-            })
+            }) */
+        sendJwtToken(res, 201, token) // shorten code
 
     } catch (error) {
-        res.status(400).json({
-            error
+        return res.status(400).json({
+            success: false,
+            message: error.message
         })
     }
 }
@@ -119,13 +140,15 @@ exports.login = async (req, res, next) => {
             return next(new ErrorHandler("Wrong password", 403))
         }
 
-        res
-            .status(200)
-            .cookie("access_token", token, { httpOnly: true, }) // sending token to cookie through cookie-parser
-            .json({
-                success: true,
-                user
-            })
+        sendJwtToken(res, 200, token) // shorten code
+
+        // res
+        //     .status(200)
+        //     .cookie("access_token", token, { httpOnly: true, }) // sending token to cookie through cookie-parser
+        //     .json({
+        //         success: true,
+        //         user
+        //     })
     } catch (error) {
         res.status(404).json({
             success: false,
@@ -148,15 +171,17 @@ exports.updateUserRole = async (req, res, next) => {
             runValidators: true,
         })
 
+        if (!user) return next(new ErrorHandler("Not a user", 404))
+
         res.status(200).json({
             success: true,
             user
         })
     } catch (error) {
-        res.status(404).json({
+        return res.status(404).json({
             success: false,
-            message: "Please enter a valid User id",
-            error
+            message: error.message,
+
         })
     }
 }
@@ -164,11 +189,17 @@ exports.updateUserRole = async (req, res, next) => {
 
 // update user password 
 exports.updatePassword = async (req, res, next) => {
-    const { email, newPassword } = req.body
+    const { email, newPassword, confirmPassword, oldPassword } = req.body
 
     try {
-        if (!email | !newPassword) {
-            return next(new ErrorHandler("Please enter a new password", 403))
+        if (!oldPassword | !newPassword | !confirmPassword) {
+            return next(new ErrorHandler("Please enter password", 403))
+        }
+        if (!email) {
+            return next(new ErrorHandler("Please enter email", 403))
+        }
+        if (newPassword !== confirmPassword) {
+            return next(new ErrorHandler("Your newPassword and confirmPassword did not matched", 401))
         }
 
         const user = await User.findOne({ email }).select("+password")
@@ -214,10 +245,10 @@ exports.deleteUser = async (req, res, next) => {
             userRemoved
         })
     } catch (error) {
-        res.status(404).json({
+        return res.status(404).json({
             success: false,
-            message: "User id is not valid",
-            error
+            message: error.message,
+
         })
     }
 }

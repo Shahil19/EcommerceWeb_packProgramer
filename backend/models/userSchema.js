@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema({
 // --------------------- custom methods with schema ---------------------
 // create JWT token with custom method
 userSchema.methods.getJwtToken = function () {
-    const token = JWT.sign({ id: this._id }, process.env.JWT_SECRET)
+    const token = JWT.sign({ id: this._id }, process.env.JWT_SECRET, { expiresIn: "48hr" })
     return token
 }
 
