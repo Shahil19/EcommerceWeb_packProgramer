@@ -1,6 +1,6 @@
-const ApiFeatures = require("../utils/apiFeatures")
 const ErrorHandler = require("../utils/errorHandler")
 const User = require("../models/userSchema")
+const cookie = require("cookie-parser")
 
 // ------------------ GET controllers ------------------------
 // Get all users
@@ -51,16 +51,51 @@ exports.registerUser = async (req, res, next) => {
             }
         })
 
-        res.status(201).json({
-            success: true,
-            user
-        })
+        // ------------- creating JWT token
+        const token = user.getJwtToken()
+
+        res
+            .status(201)
+            .cookie("access_token", token, { httpOnly: true, }) // sending token to cookie through cookie-parser
+            .json({
+                success: true,
+                user
+            })
 
     } catch (error) {
         res.status(400).json({
             error
         })
     }
+}
+
+// ---- Logout user
+exports.logout = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id)
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            })
+        }
+
+        res
+            .clearCookie("access_token")
+            .status(200)
+            .json({
+                success: true,
+                message: "Logged out successfully"
+            })
+    } catch (error) {
+        res.status(404).json({
+            success: false,
+            message: "user not found",
+            error
+        })
+    }
+
 }
 
 // ------------------ PUT controllers ------------------------

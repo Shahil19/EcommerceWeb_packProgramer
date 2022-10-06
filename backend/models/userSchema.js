@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const validator = require("validator") // to validate if email is real
+const JWT = require("jsonwebtoken")
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -37,5 +38,13 @@ const userSchema = new mongoose.Schema({
 },
     { collection: "users" }
 )
+
+
+// --------------------- custom methods with schema ---------------------
+// create JWT token with custom method
+userSchema.methods.getJwtToken = function () {
+    const token = JWT.sign({ id: this._id }, process.env.JWT_SECRET)
+    return token
+}
 
 module.exports = mongoose.model("User", userSchema)
