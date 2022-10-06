@@ -228,6 +228,34 @@ exports.updatePassword = async (req, res, next) => {
     }
 }
 
+
+// update user profile
+exports.updateProfile = async (req, res, next) => {
+    const { name } = req.body
+    const updatedDoc = { name }
+
+    try {
+        const user = await User.findByIdAndUpdate(req.user.id, updatedDoc, {
+            new: true,
+            runValidators: true,
+            useFindAndModify: false
+        })
+
+        if (!user) return next(new ErrorHandler("User not found", 404))
+
+        res.status(200).json({
+            success: true,
+            user
+        })
+    } catch (error) {
+        return res.status(401).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+
 // ------------------ DELETE controllers ------------------------
 // delete user -- ADMIN
 exports.deleteUser = async (req, res, next) => {

@@ -6,18 +6,18 @@ const { isAuthorizedUser, isAdmin, authorizeRole } = require("../middleware/isAu
 const router = express.Router()
 
 // get all products
-router.route('/products').get(authorizeRole("admin"), getAllProduct)
+router.route('/products').get(getAllProduct)
 
 // get single product detail
 router.route('/product/:id').get(getProductDetails)
 
 // create new product
-router.route('/product/new').post(authorizeRole("admin"), createProduct)
+router.route('/admin/product/new').post(isAuthorizedUser, authorizeRole("admin"), createProduct)
 
 // update product detail
-router.route('/product/:id').put(authorizeRole("admin"), updateProduct)
+router.route('/admin/product/:id').put(isAuthorizedUser, authorizeRole("admin"), updateProduct)
 
 // delete a product
-router.route('/product/:id').delete(authorizeRole("admin"), deleteProduct)
+router.route('/admin/product/:id').delete(isAuthorizedUser, authorizeRole("admin"), deleteProduct)
 
 module.exports = router
