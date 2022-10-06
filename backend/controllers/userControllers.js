@@ -38,11 +38,41 @@ exports.getUserDetails = async (req, res, next) => {
     }
 }
 
+// ---- Logout user
+exports.logout = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id)
+
+        if (!user) {
+            return next(new ErrorHandler("User not found", 404))
+        }
+
+        res
+            .clearCookie("access_token")
+            .status(200)
+            .json({
+                success: true,
+                message: "Logged out successfully"
+            })
+    } catch (error) {
+        res.status(404).json({
+            success: false,
+            message: "user not found",
+            error
+        })
+    }
+
+}
+
 // ------------------ POST controllers ------------------------
 // register a user
 exports.registerUser = async (req, res, next) => {
     const { name, email, password } = req.body
     try {
+        if (!email | !password) {
+            return next(new ErrorHandler("Please enter email and password both", 400))
+        }
+
         const user = await User.create({
             name, email, password,
             avatar: {
@@ -69,34 +99,42 @@ exports.registerUser = async (req, res, next) => {
     }
 }
 
-// ---- Logout user
-exports.logout = async (req, res, next) => {
+// ----- Login user
+exports.login = async (req, res, next) => {
+    const { email, password } = req.body
+
     try {
-        const user = await User.findById(req.params.id)
+        if (!email | !password) {
+            return next(new ErrorHandler("Please enter email and password both", 403))
+        }
+
+        const user = await User.findOne({ email }).select("+password")
+        const token = user.getJwtToken()
 
         if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found"
-            })
+            return next(new ErrorHandler("User not found", 404))
+        }
+
+        if (password !== user.password) {
+            return next(new ErrorHandler("Wrong password", 403))
         }
 
         res
-            .clearCookie("access_token")
             .status(200)
+            .cookie("access_token", token, { httpOnly: true, }) // sending token to cookie through cookie-parser
             .json({
                 success: true,
-                message: "Logged out successfully"
+                user
             })
     } catch (error) {
         res.status(404).json({
             success: false,
-            message: "user not found",
-            error
+            message: "User not found",
         })
     }
-
 }
+
+
 
 // ------------------ PUT controllers ------------------------
 
