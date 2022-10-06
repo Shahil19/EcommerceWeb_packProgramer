@@ -6,9 +6,11 @@ const User = require("../models/userSchema")
 // Get all users
 exports.getUsers = async (req, res, next) => {
     try {
+        const usersCount = await User.countDocuments()
         const users = await User.find(req.query)
         res.status(200).json({
             success: true,
+            usersCount,
             users
         })
     } catch (error) {
@@ -89,3 +91,27 @@ exports.updateUserRole = async (req, res, next) => {
 }
 
 
+// ------------------ DELETE controllers ------------------------
+// delete user -- ADMIN
+exports.deleteUser = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id)
+
+        if (!user) {
+            return next(new ErrorHandler("User id is not valid", 404))
+        }
+
+        const userRemoved = await user.remove()
+        res.status(200).json({
+            success: true,
+            message: " user deleted successfully",
+            userRemoved
+        })
+    } catch (error) {
+        res.status(404).json({
+            success: false,
+            message: "User id is not valid",
+            error
+        })
+    }
+}
