@@ -26,6 +26,22 @@ exports.getSingleOrder = async (req, res, next) => {
     }
 }
 
+// get logged in user details
+exports.getMyOrders = async (req, res, next) => {
+    try {
+        const orders = await Order.find({ user: req.user._id })
+
+        res.status(200).json({
+            success: true,
+            orders
+        })
+    } catch (error) {
+        return res.status(404).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
 
 // ---------------- POST controllers
 // create new order
