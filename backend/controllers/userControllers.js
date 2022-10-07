@@ -165,17 +165,14 @@ exports.updateUserRole = async (req, res, next) => {
         const updatedData = {
             role: req.body.role
         }
-
-        const user = await User.findByIdAndUpdate(req.params.id, updatedData, {
-            new: true,
-            runValidators: true,
-        })
+        let user = await User.findById(req.params.id)
 
         if (!user) return next(new ErrorHandler("Not a user", 404))
 
+        await User.findByIdAndUpdate(user.id, updatedData)
+
         res.status(200).json({
             success: true,
-            user
         })
     } catch (error) {
         return res.status(404).json({

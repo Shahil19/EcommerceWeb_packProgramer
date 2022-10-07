@@ -57,7 +57,7 @@ exports.getProductDetails = async (req, res, next) => {
 // ------------- POST method controllers --------------
 // Create product -- ADMIN
 exports.createProduct = async (req, res, next) => {
-    // setting user id to the body before sending to the server
+    // setting user id to the body before sending to the server 
     req.body.user = req.user.id
     try {
         const product = await Product.create(req.body)
@@ -71,7 +71,6 @@ exports.createProduct = async (req, res, next) => {
             message: error.message
         })
     }
-
 }
 
 // ------------- PUT method controllers --------------
@@ -100,7 +99,55 @@ exports.updateProduct = async (req, res, next) => {
             message: error.message
         })
     }
+}
 
+// Add / Update product review
+exports.createProductReview = async (req, res, next) => {
+    const { name, comment, rating, productId } = req.body
+    const user = req.user._id
+    const reviewDoc = { name, comment, rating: Number(rating), user }
+
+    try {
+        const product = await Product.findById(productId)
+
+        if (!product) return next(new ErrorHandler("product does not exists", 404))
+
+        const isReviewed = product.reviews.find(rev => rev.user.toString() === user.toString())
+
+        if (isReviewed) {
+            isReviewed.name = name,
+                isReviewed.comment = comment,
+                isReviewed.rating = Number(rating)
+        } else {
+            product.reviews.push(reviewDoc)
+            product.numOfReviews = product.reviews.length
+        }
+        product.numOfReviews = product.reviews.length
+
+        let totalRatingNum = 0
+        product.reviews.forEach(rev => {
+            totalRatingNum += rev.rating
+        })
+        const avgRatings = totalRatingNum / product.numOfReviews
+
+        product.ratings = avgRatings.toFixed(2)
+
+        // saving the product after changing the reviews
+        await product.save({ validateBeforeSave: false })
+
+
+        res.status(200).json({
+            success: true,
+            isReviewed
+        })
+
+
+    } catch (error) {
+        return res.status(404).json({
+            success: false,
+            message: error.message
+        })
+    }
 }
 
 // ------------- DELETE method controllers --------------
