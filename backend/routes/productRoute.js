@@ -1,6 +1,6 @@
 // here we define routes of API
 const express = require("express")
-const { getAllProduct, createProduct, updateProduct, deleteProduct, getProductDetails, createProductReview } = require("../controllers/productController")
+const { getAllProduct, createProduct, updateProduct, deleteProduct, getProductDetails, createProductReview, getAllReviews } = require("../controllers/productController")
 const { isAuthorizedUser, authorizeRole } = require("../middleware/isAuthorized")
 
 const router = express.Router()
@@ -22,5 +22,8 @@ router.route('/admin/product/:id').delete(isAuthorizedUser, authorizeRole("admin
 
 // add / update product review
 router.route('/review').put(isAuthorizedUser, createProductReview)
+
+// get all reviews of product
+router.route('/product/reviews/:id').get(isAuthorizedUser, getAllReviews)
 
 module.exports = router

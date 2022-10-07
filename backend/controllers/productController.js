@@ -53,6 +53,27 @@ exports.getProductDetails = async (req, res, next) => {
     }
 }
 
+// get All reviews 
+exports.getAllReviews = async (req, res, next) => {
+    try {
+        const product = await Product.findById(req.params.id)
+
+        if (!product) return next(new ErrorHandler("Product not found", 404))
+
+        res.status(200).json({
+            success: true,
+            totalReviews: product.numOfReviews,
+            avgRatings: product.ratings,
+            reviews: product.reviews,
+        })
+    } catch (error) {
+        return res.status(403).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
 
 // ------------- POST method controllers --------------
 // Create product -- ADMIN
@@ -135,13 +156,10 @@ exports.createProductReview = async (req, res, next) => {
         // saving the product after changing the reviews
         await product.save({ validateBeforeSave: false })
 
-
         res.status(200).json({
             success: true,
             isReviewed
         })
-
-
     } catch (error) {
         return res.status(404).json({
             success: false,
