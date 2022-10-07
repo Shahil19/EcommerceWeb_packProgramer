@@ -1,0 +1,28 @@
+{
+    "shippingInfo": {
+      "address": "CU",
+      "city": "Chittagong",
+      "state": "Chittagong",
+      "country": "Bangladesh",
+      "pinCode": 2022334,
+      "phoneNo": 1628889929
+    },
+    "orderItems": [
+      {
+        "name": "Product 1",
+        "price": 20100,
+        "quantity": 1,
+        "image": "img_url",
+        "product": "23334321"
+      }
+    ],
+    "user": "3435353223",
+    "paymentInfo": {
+      "id": "w3rw3423ds",
+      "status": "paid"
+    },
+    "itemsPrice": 200,
+    "taxPrice": 14,
+    "shippingPrice": 20,
+    "totalPrice": 334
+  }
