@@ -8,7 +8,7 @@ exports.isAuthorizedUser = async (req, res, next) => {
         const { access_token } = req.cookies
 
         if (!access_token) {
-            return next(new ErrorHandler("Unknown user", 401))
+            return next(new ErrorHandler("Please login", 401))
         }
 
         const { id } = JWT.verify(access_token, process.env.JWT_SECRET) // ========== Decoded ID ========== //

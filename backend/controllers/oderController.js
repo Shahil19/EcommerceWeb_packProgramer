@@ -26,7 +26,7 @@ exports.getSingleOrder = async (req, res, next) => {
     }
 }
 
-// get logged in user details
+// get logged in user orders details
 exports.getMyOrders = async (req, res, next) => {
     try {
         const orders = await Order.find({ user: req.user._id })
@@ -43,6 +43,27 @@ exports.getMyOrders = async (req, res, next) => {
     }
 }
 
+// get all orders and total order price -- ADMIN
+exports.getAllOrders = async (req, res, next) => {
+    try {
+        const orders = await Order.find()
+
+        let totalOrderPrice = 0;
+        orders.forEach(order => {
+            totalOrderPrice += order.totalPrice
+        })
+        res.status(200).json({
+            success: true,
+            totalOrderPrice,
+            orders
+        })
+    } catch (error) {
+        return res.status(404).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
 // ---------------- POST controllers
 // create new order
 exports.createOrder = async (req, res, next) => {

@@ -1,7 +1,10 @@
 const express = require("express")
-const { createOrder, getSingleOrder, getMyOrders } = require("../controllers/oderController")
+const { createOrder, getSingleOrder, getMyOrders, getAllOrders } = require("../controllers/oderController")
 const { isAuthorizedUser, authorizeRole } = require("../middleware/isAuthorized")
 const router = express.Router()
+
+// get all orders and total ordered price -- ADMIN
+router.route("/orders").get(getAllOrders)
 
 // get order details
 router.route("/order/:id").get(isAuthorizedUser, getSingleOrder)
