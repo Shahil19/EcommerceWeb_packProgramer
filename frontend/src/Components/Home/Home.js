@@ -3,6 +3,7 @@ import { CgMouse } from "react-icons/cg"
 import "./Home.css"
 import Product from './Product';
 import top1 from "../../ecommerce images/top1.jpg"
+import MetaData from '../Layout/MetaData';
 
 const Home = () => {
 
@@ -13,8 +14,13 @@ const Home = () => {
         _id: "anfkdnfdk",
         numOfReviews: 4
     }
+
     return (
         <Fragment>
+
+            {/*------- page Title ---------*/}
+            <MetaData title="Home page" />
+
             <div className="banner">
                 <p>Welcome to Ecommerce</p>
                 <h1>FIND AMAZING PRODUCTS BELOW</h1>
