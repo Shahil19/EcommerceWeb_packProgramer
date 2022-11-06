@@ -20,6 +20,7 @@
     "mongoose": "^6.6.3",
     "nodemailer": "^6.8.0",
     "react-icons": "^4.4.0",
+    "redux-devtools-extension": "^2.13.9",
     "validator": "^13.7.0"
   }
 }

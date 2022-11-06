@@ -4,7 +4,6 @@ import ReactStars from "react-rating-stars-component";
 
 const Product = ({ product }) => {
     const { name, price, images, numOfReviews } = product
-    console.log(product);
 
     const options = {
         edit: false,
