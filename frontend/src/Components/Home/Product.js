@@ -7,7 +7,7 @@ const Product = ({ product }) => {
 
     const options = {
         edit: false,
-        value: 4.5,
+        value: product.ratings,
         size: window.innerWidth < 600 ? 20 : 15,
         color: "rgba(20, 20, 20, 0.1)",
         activeColor: "tomato",
@@ -17,7 +17,8 @@ const Product = ({ product }) => {
 
     return (
         <Link className='productCard' to={product._id}>
-            <img src={images[0].url} alt="" />
+            <img src={images} alt="" />
+
             <p>{name}</p>
             <div>
                 <ReactStars {...options} />{" "}
