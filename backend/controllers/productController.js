@@ -9,8 +9,9 @@ const ErrorHandler = require("../utils/errorHandler")
 
 // ------------- GET method controllers --------------
 // Get all products
-exports.getAllProduct = async (req, res) => {
+exports.getAllProduct = async (req, res, next) => {
     // search filters
+
     const resultPerPage = 5
     const apiFeature = new ApiFeatures(Product.find(), req.query).search().filter().pagination(resultPerPage)
 
